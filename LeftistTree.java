@@ -22,14 +22,14 @@ public class LeftistTree {
 
     // Insert a Node into the Leftist Tree
     public void insert(Node x) {
-        root = merge(root, x);
+        root = meld(root, x);
     }
 
     // Delete and return the node with the minimum key (the root)
     public Node deleteMin() {
         if (root == null) return null;
         Node min = root;
-        root = merge(root.left, root.right);
+        root = meld(root.left, root.right);
         return min;
     }
 
@@ -38,8 +38,8 @@ public class LeftistTree {
         return root == null;
     }
 
-    // Merge two Leftist Trees
-    private Node merge(Node h1, Node h2) {
+    // Meld two Leftist Trees
+    private Node meld(Node h1, Node h2) {
         if (h1 == null) return h2;
         if (h2 == null) return h1;
 
@@ -50,8 +50,8 @@ public class LeftistTree {
             h2 = temp;
         }
 
-        // Merge h2 with the right child of h1
-        h1.right = merge(h1.right, h2);
+        // Meld h2 with the right child of h1
+        h1.right = meld(h1.right, h2);
 
         // Maintain the leftist property by adjusting npl and swapping children if necessary
         if (h1.left == null) {
@@ -84,7 +84,7 @@ public class LeftistTree {
     private Node delete(Node root, int vertex) {
         if (root == null) return null;
         if (root.vertex == vertex) {
-            return merge(root.left, root.right);  // Merge the left and right subtrees of the found node
+            return meld(root.left, root.right);  // Meld the left and right subtrees of the found node
         } else {
             root.left = delete(root.left, vertex);
             root.right = delete(root.right, vertex);

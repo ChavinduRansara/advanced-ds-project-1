@@ -6,7 +6,7 @@ class FibonacciHeap {
         int key;
         int data;
         int degree;
-        boolean marked;
+        boolean childCut;
         Node parent;
         Node child;
         Node left;
@@ -16,7 +16,7 @@ class FibonacciHeap {
             this.key = key;
             this.data = data;
             this.degree = 0;
-            this.marked = false;
+            this.childCut = false;
             this.parent = null;
             this.child = null;
             this.left = this;
@@ -103,14 +103,14 @@ class FibonacciHeap {
         x.right = x;
         min = mergeLists(min, x);
         x.parent = null;
-        x.marked = false;
+        x.childCut = false;
     }
 
     private void cascadingCut(Node y) {
         Node z = y.parent;
         if (z != null) {
-            if (!y.marked) {
-                y.marked = true;
+            if (!y.childCut) {
+                y.childCut = true;
             } else {
                 cut(y, z);
                 cascadingCut(z);
@@ -174,7 +174,7 @@ class FibonacciHeap {
         }
 
         x.degree++;
-        y.marked = false;
+        y.childCut = false;
     }
 
     private Node mergeLists(Node a, Node b) {
