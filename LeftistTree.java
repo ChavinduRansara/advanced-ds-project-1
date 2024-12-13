@@ -14,7 +14,7 @@ class Node {
 }
 
 public class LeftistTree {
-    private Node root;
+    public Node root;
 
     public LeftistTree() {
         root = null;

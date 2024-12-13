@@ -119,9 +119,12 @@ class FibonacciHeap {
     }
 
     private void consolidate() {
-        int maxDegree = (int) (Math.log(size) / Math.log(2)) + 1;
-        Node[] A = new Node[maxDegree];
-
+        int maxDegree = (int) (Math.log(size) / Math.log(1.618)) + 1;  // Using golden ratio
+        maxDegree = Math.max(maxDegree, 45); // Safety margin
+        
+        Node[] A = new Node[maxDegree];  // Degree array - temporary storage
+    
+        // Collect all roots into a list
         List<Node> nodes = new ArrayList<>();
         if (min != null) {
             Node current = min;
@@ -130,25 +133,30 @@ class FibonacciHeap {
                 current = current.right;
             } while (current != min);
         }
-
+    
+        // Main consolidation loop
         for (Node w : nodes) {
             Node x = w;
             int d = x.degree;
-
-            while (A[d] != null) {
-                Node y = A[d];
-                if (x.key > y.key) {
+    
+            // Keep linking trees of same degree
+            while (d < maxDegree && A[d] != null) {
+                Node y = A[d];  // Found another tree of same degree
+                if (x.key > y.key) {  // Ensure x has smaller key
                     Node temp = x;
                     x = y;
                     y = temp;
                 }
-                link(y, x);
+                link(y, x);  // Make y a child of x
                 A[d] = null;
                 d++;
             }
-            A[d] = x;
+            if (d < maxDegree) {
+                A[d] = x;  // Store tree in degree array
+            }
         }
-
+    
+        // Reconstruct the root list
         min = null;
         for (Node a : A) {
             if (a != null) {

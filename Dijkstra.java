@@ -50,13 +50,20 @@ public class Dijkstra {
         int[] distLeftist = dijkstraLeftistTree(graph, source);
         long leftistTime = System.nanoTime() - startTime;
 
-        // Run with Fibonacci Heap
-        startTime = System.nanoTime();
-        int[] distFibonacci = dijkstraFibonacciHeap(graph, source);
-        long fibonacciTime = System.nanoTime() - startTime;
-
         System.out.printf("Performance for n=%d, density=%.2f%%:\n", n, density * 100);
         System.out.printf("Leftist Tree Time: %.3f ms\n", leftistTime / 1_000_000.0);
+
+        // Run with Fibonacci Heap
+        startTime = System.nanoTime();
+        try {
+            int[] distFibonacci = dijkstraFibonacciHeap(graph, source);
+        } catch (OutOfMemoryError e) {
+            System.out.println("Out of memory error occurred. Try reducing the density.");
+            return;
+        }
+        
+        long fibonacciTime = System.nanoTime() - startTime;
+
         System.out.printf("Fibonacci Heap Time: %.3f ms\n", fibonacciTime / 1_000_000.0);
     }
 
@@ -98,42 +105,65 @@ public class Dijkstra {
 
     // Generate a random connected graph with given density
     private static List<List<Edge>> generateRandomGraph(int n, double density) {
-        List<List<Edge>> graph = new ArrayList<>();
+        // Initialize the graph
+        List<List<Edge>> graph = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
             graph.add(new ArrayList<>());
         }
-
-        int maxEdges = n * (n - 1) / 2;
+        
+        // Calculate target edges
+        int maxEdges = (n * (n - 1)) / 2;
         int targetEdges = (int) (maxEdges * density);
-        Set<String> addedEdges = new HashSet<>();
-
-        while (addedEdges.size() < targetEdges) {
+        
+        // First, ensure connectivity by creating a random spanning tree
+        boolean[] connected = new boolean[n];
+        connected[0] = true;
+        int connectedCount = 1;
+        
+        while (connectedCount < n) {
             int v1 = random.nextInt(n);
-            int v2 = random.nextInt(n);
-            if (v1 == v2) continue;
-
-            String edge = Math.min(v1, v2) + "," + Math.max(v1, v2);
-            if (addedEdges.add(edge)) {
-                int cost = random.nextInt(1000) + 1;
-                graph.get(v1).add(new Edge(v2, cost));
-                graph.get(v2).add(new Edge(v1, cost));
-            }
-        }
-
-        // Ensure connectivity using DFS
-        while (!isConnected(graph)) {
-            int v1 = random.nextInt(n);
-            int v2 = random.nextInt(n);
-            if (v1 != v2) {
-                String edge = Math.min(v1, v2) + "," + Math.max(v1, v2);
-                if (addedEdges.add(edge)) {
+            if (connected[v1]) { 
+                int v2 = random.nextInt(n);
+                if (!connected[v2] && v1 != v2) { // Look for unconnected vertex
                     int cost = random.nextInt(1000) + 1;
                     graph.get(v1).add(new Edge(v2, cost));
                     graph.get(v2).add(new Edge(v1, cost));
+                    connected[v2] = true;
+                    connectedCount++;
                 }
             }
         }
+        
+        int currentEdges = n - 1; // Number of edges in spanning tree
+        
+        // for edge checking
+        boolean[][] edgeExists = new boolean[n][n];
+        
+        // Mark existing edges from spanning tree
+        for (int i = 0; i < n; i++) {
+            for (Edge edge : graph.get(i)) {
+                edgeExists[i][edge.to] = true;
+                edgeExists[edge.to][i] = true;
+            }
+        }
+        
+        // Add remaining random edges
+        while (currentEdges < targetEdges) {
+            int v1 = random.nextInt(n);
+            int v2 = random.nextInt(n);
+            
+            if (v1 != v2 && !edgeExists[v1][v2]) {
+                int cost = random.nextInt(1000) + 1;
+                graph.get(v1).add(new Edge(v2, cost));
+                graph.get(v2).add(new Edge(v1, cost));
+                edgeExists[v1][v2] = true;
+                edgeExists[v2][v1] = true;
+                currentEdges++;
+            }
+        }
 
+        System.out.println(isConnected(graph) ? "Graph is connected" : "Graph is not connected");
+        
         return graph;
     }
 
