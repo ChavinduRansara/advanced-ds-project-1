@@ -13,6 +13,7 @@ public class Dijkstra {
 
         switch (args[0]) {
             case "-r":
+            // Run Dijkstra's algorithm on a randomly generated graph
                 if (args.length != 4) {
                     System.out.println("Random mode usage: -r n d x");
                     return;
@@ -23,6 +24,7 @@ public class Dijkstra {
                 runRandomMode(n, d, source);
                 break;
             case "-l":
+            // Run Dijkstra's algorithm using Leftist Tree on a user-defined graph loaded from file
                 if (args.length != 2) {
                     System.out.println("Leftist tree mode usage: -l filename");
                     return;
@@ -30,6 +32,7 @@ public class Dijkstra {
                 runUserInputMode(args[1], true);
                 break;
             case "-f":
+            // Run Dijkstra's algorithm using Fibonacci Heap on a user-defined graph loaded from file
                 if (args.length != 2) {
                     System.out.println("Fibonacci heap mode usage: -f filename");
                     return;
@@ -62,6 +65,7 @@ public class Dijkstra {
         System.out.printf("Fibonacci Heap Time: %.3f ms\n", fibonacciTime / 1_000_000.0);
         System.out.println();
 
+        // Compare the results
         boolean success = true;
         for (int i = 0; i < n; i++) {
             if (!fibDistances.get(i).equals(leftistDistances.get(i))) {
@@ -86,6 +90,7 @@ public class Dijkstra {
 
             DijkstraAlgorithm graph = new DijkstraAlgorithm(n);
 
+            // Add edges to the graph
             for (int i = 0; i < m; i++) {
                 String[] edge = reader.readLine().trim().split(" ");
                 int v1 = Integer.parseInt(edge[0]);
@@ -118,11 +123,13 @@ public class Dijkstra {
         Set<Pair<Integer, Integer>> edges = new HashSet<>();
         Random random = ThreadLocalRandom.current();
 
+        // Generate a random connected graph
         while (edges.size() < numEdges) {
             int u = random.nextInt(n);
             int v = random.nextInt(n);
             int weight = random.nextInt(1000) + 1;
 
+            // Avoid self-loops and parallel edges
             if (u != v && !edges.contains(new Pair<>(u, v)) && !edges.contains(new Pair<>(v, u))) {
                 graph.addEdge(u, v, weight);
                 edges.add(new Pair<>(u, v));
@@ -134,87 +141,22 @@ public class Dijkstra {
     }
 
     // DFS to check if the graph is connected
-   private static boolean isConnected(DijkstraAlgorithm graph) {
+    private static boolean isConnected(DijkstraAlgorithm graph) {
        boolean[] visited = new boolean[graph.size()];
        dfs(graph, 0, visited);
        for (boolean v : visited) {
            if (!v) return false;
        }
        return true;
-   }
+    }
 
-   private static void dfs(DijkstraAlgorithm graph, int v, boolean[] visited) {
+    private static void dfs(DijkstraAlgorithm graph, int v, boolean[] visited) {
         visited[v] = true;
         for (Pair<Integer, Integer> edge : graph.getGraph().get(v)) {
             if (!visited[edge.getKey()]) {
                 dfs(graph, edge.getKey(), visited);
             }
         }
-   }
-
-    // Dijkstra's algorithm using Leftist Tree
-//    private static int[] dijkstraLeftistTree(List<List<Edge>> graph, int source) {
-//        int n = graph.size();
-//        int[] dist = new int[n];
-//        Arrays.fill(dist, INF);
-//        dist[source] = 0;
-//
-//        LeftistTree pq = new LeftistTree();
-//        pq.insert(new Node(source, 0));
-//
-//        while (!pq.isEmpty()) {
-//            Node node = pq.deleteMin();
-//            int u = node.vertex;
-//
-//            if (node.key > dist[u]) continue;
-//
-//            for (Edge edge : graph.get(u)) {
-//                int v = edge.to;
-//                int newDist = dist[u] + edge.cost;
-//
-//                if (newDist < dist[v]) {
-//                    dist[v] = newDist;
-//                    pq.insert(new Node(v, newDist));
-//                }
-//            }
-//        }
-//
-//        return dist;
-//    }
-
-    // Dijkstra's algorithm using Fibonacci Heap
-//    private static int[] dijkstraFibonacciHeap(List<List<Edge>> graph, int source) {
-//        int n = graph.size();
-//        int[] dist = new int[n];
-//        Arrays.fill(dist, INF);
-//        dist[source] = 0;
-//
-//        FibonacciHeap fh = new FibonacciHeap();
-//        FibonacciHeap.Node[] nodes = new FibonacciHeap.Node[n];
-//
-//        // Initialize and insert all nodes in the Fibonacci Heap
-//        for (int i = 0; i < n; i++) {
-//            nodes[i] = fh.insert(i == source ? 0 : INF, i); // Source has distance 0; others INF
-//        }
-//
-//        while (!fh.isEmpty()) {
-//            FibonacciHeap.Node node = fh.extractMin();
-//            int u = node.data;
-//
-//            // Process each neighbor of the extracted node
-//            for (Edge edge : graph.get(u)) {
-//                int v = edge.to;
-//                int newDist = dist[u] + edge.cost;
-//
-//                // Update the distance if a shorter path is found
-//                if (newDist < dist[v]) {
-//                    dist[v] = newDist;
-//                    fh.decreaseKey(nodes[v], newDist); // Update the key in Fibonacci Heap
-//                }
-//            }
-//        }
-//
-//        return dist;
-//    }
+    }
 
 }

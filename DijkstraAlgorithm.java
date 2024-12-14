@@ -12,29 +12,35 @@ public class DijkstraAlgorithm {
         }
     }
 
+    // Get the number of vertices in the graph
     public int size() {
         return numVertices;
     }
 
+    // Get the adjacency list of the graph
     public List<List<Pair<Integer, Integer>>> getGraph() {
         return graph;
     }
 
+    // Add an edge to the graph
     public void addEdge(int u, int v, int weight) {
         graph.get(u).add(new Pair<>(v, weight));
         graph.get(v).add(new Pair<>(u, weight));
     }
 
+    // Dijkstra's algorithm using Fibonacci heap or Leftist tree
     public List<Integer> dijkstraFibonacci(int source) {
         FibonacciHeap fh = new FibonacciHeap();
         List<Integer> minDist = new ArrayList<>(Collections.nCopies(numVertices, Integer.MAX_VALUE));
         minDist.set(source, 0);
 
         List<FibonacciHeap.Node> nodes = new ArrayList<>(numVertices);
+        // Insert all vertices into the Fibonacci heap
         for (int i = 0; i < numVertices; i++) {
             nodes.add(fh.insert(minDist.get(i), i));
         }
 
+        // Perform Dijkstra's algorithm
         while (!fh.isEmpty()) {
             FibonacciHeap.Node minNode = fh.extractMin();
             int u = minNode.data;
@@ -51,18 +57,21 @@ public class DijkstraAlgorithm {
         return minDist;
     }
 
+    // Dijkstra's algorithm using Leftist tree
     public List<Integer> dijkstraLeftist(int source) {
         LeftistTree lt = new LeftistTree();
         List<Integer> minDist = new ArrayList<>(Collections.nCopies(numVertices, Integer.MAX_VALUE));
         minDist.set(source, 0);
 
         Map<Integer, Node> nodes = new HashMap<>();
+        // Insert all vertices into the Leftist tree
         for (int i = 0; i < numVertices; i++) {
             nodes.put(i, new Node(minDist.get(i), i));
             Node newNode = new Node(i,minDist.get(i));
             lt.insert(newNode);
         }
 
+        // Perform Dijkstra's algorithm
         while (!lt.isEmpty()) {
             Node minNode = lt.deleteMin();
             int u = minNode.vertex;

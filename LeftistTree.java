@@ -71,8 +71,8 @@ public class LeftistTree {
 
     // Simulate decrease key by deleting the node and re-inserting it with a new key
     public void decreaseKey(Node oldNode, int newKey) {
-        delete(oldNode.vertex);  // Delete the node with the specified vertex
-        insert(new Node(oldNode.vertex, newKey));  // Reinsert with the updated key
+        delete(oldNode.vertex);  
+        insert(new Node(oldNode.vertex, newKey));  
     }
 
     // Delete node based on vertex (for decrease key simulation)

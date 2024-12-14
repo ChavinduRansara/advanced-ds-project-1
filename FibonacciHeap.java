@@ -33,12 +33,13 @@ class FibonacciHeap {
         this.size = 0;
     }
 
+    // Insert a new node with the given key and data into the Fibonacci heap
     public Node insert(int key, int value) {
         Node node = new Node(key, value);
         if (min == null) {
             min = node;
         } else {
-            mergeWithRootList(node);
+            mergeWithRootList(node); // Add the new node to the root list
             if (node.key < min.key) {
                 min = node;
             }
@@ -46,10 +47,13 @@ class FibonacciHeap {
         size++;
         return node;
     }
+
+    // Merge the node with the root list
     private void mergeWithRootList(Node node) {
         if(min == null){
             min = node;
         }else{
+            // Insert the node into the root list
             node.left = min;
             node.right = min.right;
             min.right.left = node;
@@ -60,6 +64,7 @@ class FibonacciHeap {
         }
     }
 
+    // Extract the node from the root list 
     private void removeFromRootList(Node node) {
         if (node.right == node) {
             min = null;
@@ -72,6 +77,7 @@ class FibonacciHeap {
         }
     }
 
+    // Remove the node from the child list
     private void removeFromChildList(Node parent, Node node) {
         if (node.right == node) {
             parent.child = null;
@@ -85,6 +91,7 @@ class FibonacciHeap {
         node.left = node.right = node;
     }
 
+    // Merge the node with the child list
     private Node mergeWithChildList(Node child, Node node) {
         if (child == null) {
             return node;
@@ -97,6 +104,7 @@ class FibonacciHeap {
         return child;
     }
 
+    // Extract the node with the minimum key from the Fibonacci heap
     public Node extractMin() {
         Node z = min;
         if (z != null) {
@@ -118,6 +126,7 @@ class FibonacciHeap {
         return z;
     }
 
+    // Decrease the key of the node to the new key
     public void decreaseKey(Node x, int k) {
         if (k > x.key) {
             throw new IllegalArgumentException("New key is greater than current key");
@@ -126,6 +135,7 @@ class FibonacciHeap {
         x.key = k;
         Node y = x.parent;
 
+        // Cut the node from its parent if it violates the heap property
         if (y != null && x.key < y.key) {
             cut(x, y);
             cascadingCut(y);
@@ -137,6 +147,7 @@ class FibonacciHeap {
     }
 
 
+    // Remove the node from the Fibonacci heap
     private void cut(Node x, Node y) {
         removeFromChildList(y, x);
         y.degree--;
@@ -145,6 +156,7 @@ class FibonacciHeap {
         x.childCut = false;
     }
 
+    // Perform cascading cut on the node
     private void cascadingCut(Node y) {
         Node z = y.parent;
         if (z != null) {
@@ -157,6 +169,7 @@ class FibonacciHeap {
         }
     }
 
+    // Iterate through the nodes in the Fibonacci heap
     private List<Node> iterate(Node head) {
         List<Node> nodes = new ArrayList<>();
         if (head == null) return nodes;
@@ -170,12 +183,14 @@ class FibonacciHeap {
         return nodes;
     }
 
+    // Consolidate the Fibonacci heap
     private void consolidate() {
         int maxDegree = (int) (Math.log(size) / Math.log(2)) + 10;
         List<Node> A = new ArrayList<>(Collections.nCopies(maxDegree, null));
 
         List<Node> nodes = iterate(min);
 
+        // Combine nodes with the same degree
         for (Node w : nodes) {
             Node x = w;
             int d = x.degree;
@@ -193,6 +208,7 @@ class FibonacciHeap {
             A.set(d, x);
         }
 
+        // Reconstruct the root list
         min = null;
         for (Node node : A) {
             if (node != null) {
@@ -203,6 +219,7 @@ class FibonacciHeap {
         }
     }
 
+    // Link the node y to the node x
     private void link(Node y, Node x) {
         removeFromRootList(y);
         y.left = y.right = y;
