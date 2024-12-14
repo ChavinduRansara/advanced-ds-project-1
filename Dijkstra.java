@@ -105,7 +105,7 @@ public class Dijkstra {
 
             // Output distances from source to each vertex
             for (int i = 0; i < n; i++) {
-                System.out.println(dist.get(i) == INF ? "INF" : dist.get(i));
+                System.out.println(dist.get(i) == INF ? "INF" : dist.get(i) + " //cost from node "+source+" to node "+i);
             }
 
         } catch (IOException e) {
