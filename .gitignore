@@ -1,7 +1,8 @@
 node_modules
 .idea
 Dijkstra.class
-Edge.class
+DijkstraAlgorithm.class
+Pair.class
 FibonacciHeap$Node.class
 FibonacciHeap.class
 LeftistTree.class

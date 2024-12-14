@@ -58,12 +58,12 @@ public class LeftistTree {
             h1.left = h1.right;
             h1.right = null;
         } else {
-            if (h1.left.npl < h1.right.npl) {
+            if (h1.right != null && h1.left.npl < h1.right.npl) {
                 Node temp = h1.left;
                 h1.left = h1.right;
                 h1.right = temp;
             }
-            h1.npl = h1.right.npl + 1;
+            h1.npl = (h1.right != null ? h1.right.npl : 0) + 1;
         }
 
         return h1;
